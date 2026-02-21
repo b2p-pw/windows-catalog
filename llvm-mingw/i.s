@@ -3,7 +3,7 @@ param([String]$v = "latest", [Switch]$s = $false)
 
 # 1. Carregar Core e Manifesto
 $core = irm "https://raw.githubusercontent.com/b2p-pw/b2p/main/win/core.ps1" | iex
-$manifest = irm "https://w.b2p.pw/llvm-mingw/manifest.json"
+$manifest = irm "https://raw.githubusercontent.com/b2p-pw/w/main/llvm-mingw/manifest.json"
 
 # 2. Definição de Builds
 $builds = @(
