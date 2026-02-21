@@ -1,9 +1,12 @@
 # i.s - LLVM-MinGW Installer
 param([String]$v = "latest", [Switch]$s = $false)
 
-# 1. Carregar Core e Manifesto (GitHub Raw)
-$core = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/b2p-pw/b2p/main/win/core.ps1" | iex
-$manifest = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/b2p-pw/w/main/llvm-mingw/manifest.json"
+$core = irm "https://raw.githubusercontent.com/b2p-pw/b2p/main/win/core.ps1" | iex
+$manifest = irm "https://raw.githubusercontent.com/b2p-pw/w/main/llvm-mingw/manifest.json"
+
+if (-not $s) {
+    Write-Host "Instalador: $($manifest.Name) (Script v$($manifest.ScriptVersion))" -ForegroundColor Gray
+}
 
 # 2. Definição de Builds
 $builds = @(

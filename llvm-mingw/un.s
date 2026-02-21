@@ -1,29 +1,11 @@
-# un.s - B2P Smart Uninstaller
-param([String]$v = "latest")
+# un.s - Repositório W
+param([String]$v = "all")
 
-# 1. Lógica de Core Adaptativo (Local > Web)
-$B2P_BIN = "$env:USERPROFILE\.b2p\bin"
-$localCore = Join-Path $B2P_BIN "core.ps1"
+# Se o appName não foi injetado pelo b2p.ps1, define o padrão do repo
+if (-not $appName) { $appName = "llvm-mingw" }
 
-if (Test-Path $localCore) {
-    . $localCore
-    Write-Host "[un.s] Usando motor Core local." -ForegroundColor Gray
-} else {
-    $coreCode = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/b2p-pw/b2p/main/win/core.ps1"
-    Invoke-Expression $coreCode
-    Write-Host "[un.s] Usando motor Core via Web." -ForegroundColor Yellow
-}
+$coreUrl = "https://raw.githubusercontent.com/b2p-pw/b2p/main/win/core.ps1"
+if (Test-Path "$env:USERPROFILE\.b2p\bin\core.ps1") { . "$env:USERPROFILE\.b2p\bin\core.ps1" }
+else { . { $(irm $coreUrl) } }
 
-# 2. Identificar o App (baseado na pasta onde o script está)
-# Se estiver rodando local, ele descobre o nome pela pasta pai
-$scriptPath = Split-Path $MyInvocation.MyCommand.Path
-$appName = (Get-Item (Split-Path $scriptPath -Parent)).Name
-
-if ([string]::IsNullOrWhiteSpace($appName)) {
-    # Se rodar via Web, o nome deve ser passado ou inferido (exemplo fixo no repo)
-    $appName = "llvm-mingw" 
-}
-
-# 3. Chamar a função de remoção do Core
-# O Core cuidará de: remover teleports, shims, entradas no PATH real e deletar os arquivos.
 Uninstall-B2PApp -Name $appName -Version $v
