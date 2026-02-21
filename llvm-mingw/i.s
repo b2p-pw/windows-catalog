@@ -1,25 +1,60 @@
 # i.s - LLVM-MinGW Installer
 param([String]$v = "latest", [Switch]$s = $false)
 
+# 1. Carregar Core e Manifesto
 $core = irm "https://raw.githubusercontent.com/b2p-pw/b2p/main/win/core.ps1" | iex
-$manifest = irm "https://raw.githubusercontent.com/b2p-pw/w/main/llvm-mingw/manifest.json"
+$manifest = irm "https://w.b2p.pw/llvm-mingw/manifest.json"
 
-# Lógica herdada do seu script: Seleção de Build
-$arch = "x86_64"; $rt = "msvcrt" # Defaults
+# 2. Definição de Builds
+$builds = @(
+    @{ Name = "64 bits, UCRT (Recomendado)"; Arch = "x86_64"; RT = "ucrt" },
+    @{ Name = "64 bits, MSVCRT";           Arch = "x86_64"; RT = "msvcrt" },
+    @{ Name = "32 bits, UCRT";           Arch = "i686";   RT = "ucrt" },
+    @{ Name = "32 bits, MSVCRT";           Arch = "i686";   RT = "msvcrt" }
+)
+
+$selectedBuild = $builds[0] # Padrão: 64-bit UCRT
+
 if (-not $s) {
-    Write-Host "--- LLVM-MinGW Build Selection ---"
-    $arch = Read-Host "Arquitetura (x86_64 / i686)"
-    $rt = Read-Host "Runtime (ucrt / msvcrt)"
+    Write-Host "`n--- Seleção de Build: LLVM-MinGW ---" -ForegroundColor Cyan
+    for ($i = 0; $i -lt $builds.Count; $i++) {
+        " [{0}] {1}" -f ($i + 1), $builds[$i].Name
+    }
+    
+    $choice = Read-Host "`nEscolha o número da build"
+    $idx = 0
+    if ([int]::TryParse($choice, [ref]$idx) -and $idx -ge 1 -and $idx -le $builds.Count) {
+        $selectedBuild = $builds[$idx - 1]
+    }
 }
 
-# Busca URL no GitHub
+$architecture = $selectedBuild.Arch
+$buildName = $selectedBuild.RT
+
+# 3. Buscar URL no GitHub
+Write-Host "Buscando versão no GitHub..." -ForegroundColor Gray
 $api = "https://api.github.com/repos/mstorsjo/llvm-mingw/releases/latest"
 if ($v -ne "latest") { $api = "https://api.github.com/repos/mstorsjo/llvm-mingw/releases/tags/v$v" }
 
-$rel = irm $api -UserAgent "b2p"
-$asset = $rel.assets | Where-Object { $_.name -like "*-$rt-$arch.zip" } | Select-Object -First 1
+try {
+    $rel = Invoke-RestMethod -Uri $api -UserAgent "b2p"
+    $asset = $rel.assets | Where-Object { $_.name -like "*-$buildName-$architecture.zip" } | Select-Object -First 1
 
-$manifest.Url = $asset.browser_download_url
-$versionStr = if ($v -eq "latest") { $rel.tag_name -replace 'v','' } else { $v }
+    if (-not $asset) { throw "Não foi possível encontrar o arquivo zip para esta arquitetura." }
 
-Install-B2PApp -Manifest $manifest -Version $versionStr -Silent:$s
+    # Garantir que a propriedade Url exista no objeto antes de definir
+    if (-not $manifest.PSObject.Properties['Url']) {
+        $manifest | Add-Member -MemberType NotePropertyName -Name "Url" -Value $asset.browser_download_url -Force
+    } else {
+        $manifest.Url = $asset.browser_download_url
+    }
+
+    $versionStr = if ($v -eq "latest") { $rel.tag_name -replace 'v','' } else { $v }
+
+    # 4. Chamar o Motor
+    Install-B2PApp -Manifest $manifest -Version $versionStr -Silent:$s
+
+} catch {
+    Write-Host "Erro: $($_.Exception.Message)" -ForegroundColor Red
+    return
+}

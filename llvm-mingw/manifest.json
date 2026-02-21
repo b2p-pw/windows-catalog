@@ -1,10 +1,11 @@
 {
   "Name": "llvm-mingw",
+  "Url": "",
   "RelativeBinPath": "bin",
   "RealPath": false,
   "Shims": [
-    {"bin": "bin\\clang.exe", "alias": "clang"},
-    {"bin": "bin\\clang++.exe", "alias": "clang++"},
-    {"bin": "bin\\lld.exe", "alias": "ld-llvm"}
+    {"bin": "clang.exe", "alias": "clang"},
+    {"bin": "clang++.exe", "alias": "clang++"},
+    {"bin": "lld.exe", "alias": "ld-llvm"}
   ]
 }
