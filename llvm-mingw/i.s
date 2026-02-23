@@ -1,4 +1,4 @@
-# i.s - LLVM-MinGW v1.0.4
+# i.s - LLVM-MinGW v1.0.5
 param([String]$v = "latest", [Switch]$s = $false)
 
 $core = irm "https://raw.githubusercontent.com/b2p-pw/b2p/main/win/core.ps1" | iex
@@ -26,7 +26,6 @@ $buildName = $selectedBuild.RT
 
 Write-Host "Buscando versão no GitHub..." -ForegroundColor Gray
 $api = "https://api.github.com/repos/mstorsjo/llvm-mingw/releases/latest"
-# CORREÇÃO: Não forçar o prefixo 'v' pois as tags do LLVM são apenas a data
 if ($v -ne "latest") { $api = "https://api.github.com/repos/mstorsjo/llvm-mingw/releases/tags/$v" }
 
 try {
