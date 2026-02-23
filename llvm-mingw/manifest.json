@@ -1,8 +1,6 @@
 {
   "Name": "llvm-mingw",
-  "Version": "20251216",
-  "ScriptVersion": "1.0.2", 
-  "Url": "",
+  "ScriptVersion": "1.0.3-alpha",
   "RelativeBinPath": "bin",
   "RealPath": false,
   "Shims": [
