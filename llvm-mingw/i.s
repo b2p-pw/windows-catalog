@@ -1,4 +1,4 @@
-# i.s - LLVM-MinGW v1.0.3
+# i.s - LLVM-MinGW v1.0.4
 param([String]$v = "latest", [Switch]$s = $false)
 
 $core = irm "https://raw.githubusercontent.com/b2p-pw/b2p/main/win/core.ps1" | iex
@@ -26,20 +26,20 @@ $buildName = $selectedBuild.RT
 
 Write-Host "Buscando versão no GitHub..." -ForegroundColor Gray
 $api = "https://api.github.com/repos/mstorsjo/llvm-mingw/releases/latest"
-if ($v -ne "latest") { $api = "https://api.github.com/repos/mstorsjo/llvm-mingw/releases/tags/v$v" }
+# CORREÇÃO: Não forçar o prefixo 'v' pois as tags do LLVM são apenas a data
+if ($v -ne "latest") { $api = "https://api.github.com/repos/mstorsjo/llvm-mingw/releases/tags/$v" }
 
 try {
     $rel = Invoke-RestMethod -Uri $api -UserAgent "b2p"
-    # Filtro agressivo para evitar 404
     $asset = $rel.assets | Where-Object { 
         $_.name -like "*$buildName*$architecture*.zip" -or 
         $_.name -like "*$architecture*$buildName*.zip" 
     } | Select-Object -First 1
 
-    if (-not $asset) { throw "Arquivo compatível não encontrado na tag $v." }
+    if (-not $asset) { throw "Arquivo compatível não encontrado." }
 
     $manifest | Add-Member -NotePropertyName "Url" -NotePropertyValue $asset.browser_download_url -Force
-    $versionStr = if ($v -eq "latest") { $rel.tag_name -replace 'v','' } else { $v }
+    $versionStr = if ($v -eq "latest") { $rel.tag_name } else { $v }
 
     Install-B2PApp -Manifest $manifest -Version $versionStr -Silent:$s
 } catch { Write-Host "Erro: $($_.Exception.Message)" -ForegroundColor Red }
