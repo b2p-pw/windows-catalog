@@ -1,14 +1,18 @@
-# i.s - LLVM-MinGW v1.0.5
+# i.s - LLVM-MinGW v1.0.0
 param([String]$v = "latest", [Switch]$s = $false)
 
-$core = irm "https://raw.githubusercontent.com/b2p-pw/b2p/main/windows/core.ps1" | iex
-$manifest = irm "https://raw.githubusercontent.com/b2p-pw/windows-catalog/main/llvm-mingw/manifest.json"
+if (-not $OriginUrl) { $OriginUrl = "https://raw.githubusercontent.com/b2p-pw/windows-catalog/main/llvm-mingw/v/1.0/i.s" }
+$currentDir = Split-Path $OriginUrl
+
+$manifest = Invoke-RestMethod -Uri "$currentDir/manifest.json"
+
+$core = Invoke-RestMethod -Uri "https://raw.githubusercontent.com/b2p-pw/b2p/main/windows/core.ps1" | iex
 
 $builds = @(
-    @{ Name = "64 bits, UCRT (Recomendado)"; Arch = "x86_64"; RT = "ucrt" },
-    @{ Name = "64 bits, MSVCRT";           Arch = "x86_64"; RT = "msvcrt" },
-    @{ Name = "32 bits, UCRT";           Arch = "i686";   RT = "ucrt" },
-    @{ Name = "32 bits, MSVCRT";           Arch = "i686";   RT = "msvcrt" }
+    @{ Name = "64 bits, UCRT (Default)";    Arch = "x86_64";    RT = "ucrt" },
+    @{ Name = "64 bits, MSVCRT";            Arch = "x86_64";    RT = "msvcrt" },
+    @{ Name = "32 bits, UCRT";              Arch = "i686";      RT = "ucrt" },
+    @{ Name = "32 bits, MSVCRT";            Arch = "i686";      RT = "msvcrt" }
 )
 $selectedBuild = $builds[0] 
 if (-not $s) {
@@ -32,5 +36,5 @@ try {
     $manifest | Add-Member -NotePropertyName "Url" -NotePropertyValue $asset.browser_download_url -Force
     $versionStr = if ($v -eq "latest") { $rel.tag_name } else { $v }
 
-    Install-B2PApp -Manifest $manifest -Version $versionStr -Silent:$s
+    Install-B2PApp -Manifest $manifest -Version $v -OriginUrl $OriginUrl -Silent:$s
 } catch { Write-Host "Erro: $($_.Exception.Message)" -ForegroundColor Red }

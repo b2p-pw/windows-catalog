@@ -1,4 +1,4 @@
-# uninstall.ps1 - A lógica fixa de remoção
+# uninstall.ps1 - LLVM-MinGW v1.0.0
 param([String]$Name = "llvm-mingw", [String]$Version = "latest")
 
 $B2P_HOME = Join-Path $env:USERPROFILE ".b2p"
