@@ -1,4 +1,4 @@
-# un.s - LLVM-MinGW v1.0.0
+# Uninstall Script - LLVM-MinGW v1.0.0
 param([String]$Name = "llvm-mingw", [String]$Version = "all")
 
 $B2P_APPS = Join-Path $env:USERPROFILE ".b2p\apps"

@@ -1,4 +1,4 @@
-# up.s - LLVM-MinGW v1.0.0
+# Upgrade Script - LLVM-MinGW v1.0.0
 param([Switch]$s = $false)
 
 $sf = if ($s) { "-s" } else { "" }
