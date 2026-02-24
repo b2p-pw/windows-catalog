@@ -1,0 +1,11 @@
+{
+  "Name": "llvm-mingw",
+  "ScriptVersion": "1.0.0",
+  "RelativeBinPath": "bin",
+  "RealPath": false,
+  "Shims": [
+    {"bin": "clang.exe", "alias": "clang"},
+    {"bin": "clang++.exe", "alias": "clang++"},
+    {"bin": "lld.exe", "alias": "ld-llvm"}
+  ]
+}
