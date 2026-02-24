@@ -1,0 +1,10 @@
+{
+  "Name": "zpaq",
+  "ScriptVersion": "1.0.0",
+  "Version": "1.0.0",
+  "RelativeBinPath": "",
+  "RealPath": false,
+  "Shims": [
+    { "bin": "zpaq.exe", "alias": "zpaq" }
+  ]
+}
