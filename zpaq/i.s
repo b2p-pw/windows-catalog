@@ -2,7 +2,10 @@
 param([String]$v = "latest", [Switch]$s = $false)
 
 if (-not $OriginUrl) { $OriginUrl = "https://raw.githubusercontent.com/b2p-pw/windows-catalog/main/zpaq/v/1.0.0/i.s" }
-$currentDir = Split-Path $OriginUrl
+
+# $OriginUrl is an HTTP URL; Split-Path would convert slashes to backslashes
+# which breaks URI parsing.  Use a regex to strip the last segment instead.
+$currentDir = $OriginUrl -replace '/[^/]+$',''
 
 $manifest = Invoke-RestMethod -Uri "$currentDir/manifest.json"
 

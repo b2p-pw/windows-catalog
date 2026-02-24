@@ -2,7 +2,9 @@
 param([String]$v = "latest", [Switch]$s = $false)
 
 if (-not $OriginUrl) { $OriginUrl = "https://raw.githubusercontent.com/b2p-pw/windows-catalog/main/llvm-mingw/v/1.0.0/i.s" }
-$currentDir = Split-Path $OriginUrl
+
+# derive correct directory by trimming the last path segment
+$currentDir = $OriginUrl -replace '/[^/]+$',''
 
 $manifest = Invoke-RestMethod -Uri "$currentDir/manifest.json"
 
