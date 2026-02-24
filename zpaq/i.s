@@ -1,7 +1,7 @@
 # Install Script - zpaq v1.0.0
 param([String]$v = "latest", [Switch]$s = $false)
 
-if (-not $OriginUrl) { $OriginUrl = "https://raw.githubusercontent.com/b2p-pw/windows-catalog/main/zpaq/v/1.0/i.s" }
+if (-not $OriginUrl) { $OriginUrl = "https://raw.githubusercontent.com/b2p-pw/windows-catalog/main/zpaq/v/1.0.0/i.s" }
 $currentDir = Split-Path $OriginUrl
 
 $manifest = Invoke-RestMethod -Uri "$currentDir/manifest.json"
